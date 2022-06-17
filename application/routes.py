@@ -1,6 +1,7 @@
 from application import app, db
 from application.models import ToDos
-from flask import redirect, url_for, render_template
+from application.forms import TaskForm
+from flask import redirect, url_for, render_template, request
 
 @app.route('/')
 def index():
@@ -16,12 +17,19 @@ def about():
     return render_template("about.html")
 
 
-@app.route('/add/<t>')
-def add(t):
-    newtask = ToDos(task=t)
-    db.session.add(newtask)
-    db.session.commit()
-    return redirect(url_for('index'))
+@app.route('/add', methods=['GET','POST'])
+def add():
+    form = TaskForm()
+    if request.method == 'POST':
+        if form.validate_on_submit():
+            taskData = ToDos(
+                task = form.task.data,
+                completed = form.completed.data
+            )
+            db.session.add(taskData)
+            db.session.commit()
+            return redirect(url_for('index'))
+    return render_template('addtask.html', form=form)
 
 @app.route('/complete/<int:id>')
 def complete(id):
@@ -44,9 +52,9 @@ def update(id, newtask):
     db.session.commit()
     return redirect(url_for('index'))
 
-@app.route('/delete/<deltask>')
-def delete(deltask):
-    todo = ToDos.query.filter_by(task=deltask).first()
+@app.route('/delete/<int:id>')
+def delete(id):
+    todo = ToDos.query.get(id)
     db.session.delete(todo)
     db.session.commit()
     return redirect(url_for('index'))
