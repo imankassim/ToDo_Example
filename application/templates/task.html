@@ -7,5 +7,14 @@
 <form action="{{ url_for('delete', id=todo.id) }}">
 <button type="Submit">Delete Task</button>
 </form>
+<form action="{{ url_for('complete', id=todo.id) }}">
+<button type="Submit">Complete Task</button>
+</form>
+<form action="{{ url_for('incomplete', id=todo.id) }}">
+<button type="Submit">Incomplete Task</button>
+</form>
+<form action="{{ url_for('update', id=todo.id) }}">
+<button type="Submit">Update Task</button>
+</form>
 {% endfor %}
 {% endblock body %}

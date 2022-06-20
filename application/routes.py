@@ -45,12 +45,17 @@ def incomplete(id):
     db.session.commit()
     return redirect(url_for('index'))
 
-@app.route('/update/<int:id>/<newtask>')
-def update(id, newtask):
+@app.route('/update/<int:id>', methods= ['GET', 'POST'])
+def update(id):
+    form = TaskForm()
     todo = ToDos.query.get(id)
-    todo.task = newtask
-    db.session.commit()
-    return redirect(url_for('index'))
+    if form.validate_on_submit():
+        todo.task = form.task.data
+        db.session.commit()
+        return redirect(url_for('index'))
+    elif request.method == 'GET':
+        form.task.data = todo.task
+    return render_template('update.html', form=form)
 
 @app.route('/delete/<int:id>')
 def delete(id):
